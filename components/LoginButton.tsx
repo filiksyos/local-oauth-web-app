@@ -22,13 +22,25 @@ export default function LoginButton({ onSuccess }: LoginButtonProps) {
       // Generate nonce for replay attack prevention
       const nonce = crypto.randomUUID();
 
+      // Get app name and URL for OAuth approval dialog
+      const appName = typeof window !== 'undefined' 
+        ? document.title || 'Local Web App'
+        : 'Local Web App';
+      const appUrl = typeof window !== 'undefined'
+        ? window.location.origin
+        : 'http://localhost:3000';
+
       // Send request to local Electron OAuth agent
       const response = await fetch('http://localhost:5000/oauth', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({ nonce }),
+        body: JSON.stringify({ 
+          nonce,
+          appName,
+          appUrl,
+        }),
       });
 
       if (!response.ok) {
